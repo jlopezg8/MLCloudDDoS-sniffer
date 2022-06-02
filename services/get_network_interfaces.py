@@ -1,12 +1,13 @@
+from __future__ import annotations
 import platform
 
-import netifaces
 
-
-def get_network_interfaces():
-    interfaces: list[str] = netifaces.interfaces()
+def get_network_interfaces() -> dict[str, str]:
     if platform.system() == 'Windows':
-        # TODO: explain this:
-        return [fr'\\Device\\NPF_{interface}' for interface in interfaces]
+        from winpcapy import WinPcapDevices
+        return {
+            description: name
+            for name, description in WinPcapDevices.list_devices().items()}
     else:
-        return interfaces
+        import netifaces
+        return {interface: interface for interface in netifaces.interfaces()}

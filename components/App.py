@@ -15,7 +15,7 @@ class App(ttk.Frame):
         self,
         master: tk.Misc,
         *,
-        network_interfaces: list[str],
+        network_interfaces: dict[str, str],
         sniffer: SnifferProtocol,
     ):
         super().__init__(master, padding=10)
