@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import tkinter as tk
-from collections import Mapping
+from collections.abc import Mapping
 from tkinter import ttk
 
 from components.events import Event
@@ -14,12 +14,12 @@ class InterfaceDropdown(ttk.Frame):
         self,
         master: tk.Misc,
         *,
-        interface_var: tk.StringVar,
         network_interfaces: Mapping[InterfaceFriendlyName, InterfaceName],
+        interface_var: tk.StringVar,
     ):
         super().__init__(master)
-        self._interface_var = interface_var
         self._network_interfaces = network_interfaces
+        self._interface_var = interface_var
         self._interface_friendly_name_var = tk.StringVar()
         self._the_root: tk.Tk = self._root()  # type: ignore
         self._create_widgets()
@@ -46,12 +46,12 @@ class InterfaceDropdown(ttk.Frame):
         )
         self._the_root.bind(
             Event.CAPTURE_STARTED,
-            lambda event: self._combobox.config(state='disabled'),
+            lambda event: self._combobox.configure(state='disabled'),
             add=True,
         )
         self._the_root.bind(
             Event.CAPTURE_ENDED,
-            lambda event: self._combobox.config(state='normal'),
+            lambda event: self._combobox.configure(state='normal'),
             add=True,
         )
     

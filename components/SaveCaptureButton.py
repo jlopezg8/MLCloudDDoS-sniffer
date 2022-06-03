@@ -1,11 +1,13 @@
-import re
-from datetime import datetime
+from __future__ import annotations
+
+from collections.abc import Callable
 
 import tkinter as tk
 from tkinter import filedialog, ttk
 
 from components.events import Event
 from services import SnifferProtocol
+from services.get_capture_filename import Interface
 
 
 class SaveCaptureButton(ttk.Button):
@@ -13,8 +15,9 @@ class SaveCaptureButton(ttk.Button):
         self,
         master: tk.Misc,
         *,
-        sniffer: SnifferProtocol,
+        get_capture_filename: Callable[[Interface], str],
         interface_var: tk.StringVar,
+        sniffer: SnifferProtocol,
     ):
         super().__init__(
             master,
@@ -23,14 +26,15 @@ class SaveCaptureButton(ttk.Button):
             state='disabled',
             width=15,
         )
-        self._sniffer = sniffer
+        self._get_capture_filename = get_capture_filename
         self._interface_var = interface_var
+        self._sniffer = sniffer
         self._the_root: tk.Tk = master._root()  # type: ignore
         self._bind_event_handlers()
 
     def _save_capture(self):
         options = dict(
-            initialfile=self._get_capture_filename(),
+            initialfile=self._get_capture_filename(self._interface_var.get()),
             filetypes=(
                 ('JSON', '*.json'),
                 ('Todos los archivos', '*'),
@@ -39,20 +43,14 @@ class SaveCaptureButton(ttk.Button):
         if (filename := filedialog.asksaveasfilename(**options)):
             self._sniffer.save_packets_as_json(filename)
 
-    def _get_capture_filename(self):
-        """TODO: move to a new service? Is it worth it?"""
-        interface = re.sub(r'[^a-zA-Z0-9{}]', '-', self._interface_var.get())
-        timestamp = f'{datetime.now():%Y-%m-%dT%H-%M-%S}'
-        return f'capture_{interface}_{timestamp}.json'
-
     def _bind_event_handlers(self):
         self._the_root.bind(
             Event.CAPTURE_STARTED,
-            lambda event: self.config(state='disabled'),
+            lambda event: self.configure(state='disabled'),
             add=True,
         )
         self._the_root.bind(
             Event.CAPTURE_ENDED,
-            lambda event: self.config(state='normal'),
+            lambda event: self.configure(state='normal'),
             add=True,
         )

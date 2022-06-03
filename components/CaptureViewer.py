@@ -45,22 +45,34 @@ class CaptureViewer1(ScrolledText):
         self.insert(LINE_1_CHAR_0, text)
 
 
-class CaptureViewer2(ttk.Treeview):
+class CaptureViewer2(ttk.Frame):
     def __init__(
         self,
         master: tk.Misc,
         *,
         sniffer: SnifferProtocol,
     ):
-        super().__init__(
-            master,
+        super().__init__(master)
+        self._sniffer = sniffer
+        self._the_root: tk.Tk = self._root()  # type: ignore
+        self._create_widgets()
+        self._bind_event_handlers()
+
+    def _create_widgets(self):
+        self._treeview = ttk.Treeview(
+            self,
             #width=55,  # No parameter named "width"
             height=19,
         )
-        self.column('#0', width=457)
-        self._sniffer = sniffer
-        self._the_root: tk.Tk = self._root()  # type: ignore
-        self._bind_event_handlers()
+        self._treeview.column('#0', width=443)
+        self._treeview.pack(side=tk.LEFT)
+        self._scrollbar = ttk.Scrollbar(
+            self,
+            command=self._treeview.yview,
+            orient=tk.VERTICAL,
+        )
+        self._scrollbar.pack(expand=True, fill=tk.Y, side=tk.RIGHT)
+        self._treeview.configure(yscrollcommand=self._scrollbar.set)
 
     def _bind_event_handlers(self):
         self._the_root.bind(
@@ -75,8 +87,8 @@ class CaptureViewer2(ttk.Treeview):
         )
 
     def _clear(self):
-        for child in self.get_children():
-            self.delete(child)
+        for child in self._treeview.get_children():
+            self._treeview.delete(child)
 
     def _show_capture(self):
         if (packets := self._sniffer.get_packets()):
@@ -86,8 +98,8 @@ class CaptureViewer2(ttk.Treeview):
             self._append_item(label='(Vacío)')
 
     def _append_item(self, label: str, item: Any = None, parent_id: str = ''):
-        item_id = self.insert(parent=parent_id, index=tk.END, text=label,
-                              open=True)
+        item_id = self._treeview.insert(
+            parent=parent_id, index=tk.END, text=label, open=True)
         if isinstance(item, dict):
             for key, value in item.items():
                 self._append_item(label=key, item=value, parent_id=item_id)
@@ -95,7 +107,7 @@ class CaptureViewer2(ttk.Treeview):
             for i, e in enumerate(item, start=1):
                 self._append_item(label=f'#{i}', item=e, parent_id=item_id)
         elif item is not None:
-            self.insert(parent=item_id, index=tk.END, text=str(item))
+            self._treeview.insert(parent=item_id, index=tk.END, text=str(item))
 
 
 def CaptureViewer(

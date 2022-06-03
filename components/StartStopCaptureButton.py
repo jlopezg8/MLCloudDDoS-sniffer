@@ -39,14 +39,14 @@ class StartStopCaptureButton(ttk.Button):
     def _bind_event_handlers(self):
         self._the_root.bind(
             Event.INTERFACE_SELECTED,
-            lambda event: self.config(
+            lambda event: self.configure(
                 state='normal' if self._interface_var.get() else 'disabled',
             ),
             add=True,
         )
         self._the_root.bind(
             Event.CAPTURE_STARTED,
-            lambda event: self.config(
+            lambda event: self.configure(
                 text=self._STOP_CAPTURE_TEXT,
                 command=self._stop_capture,
             ),
@@ -54,7 +54,7 @@ class StartStopCaptureButton(ttk.Button):
         )
         self._the_root.bind(
             Event.CAPTURE_ENDED,
-            lambda event: self.config(
+            lambda event: self.configure(
                 text=self._START_CAPTURE_TEXT,
                 command=self._start_capture,
             ),

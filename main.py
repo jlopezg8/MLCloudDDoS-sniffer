@@ -1,7 +1,7 @@
 import tkinter as tk
 
 from components import App
-from services import get_network_interfaces, Sniffer
+from services import get_capture_filename, get_network_interfaces, Sniffer
 
 
 def main():
@@ -11,6 +11,7 @@ def main():
         root,
         network_interfaces=get_network_interfaces(),
         sniffer=Sniffer(),
+        get_capture_filename=get_capture_filename,
     ).pack(expand=True, fill=tk.BOTH)
     root.mainloop()
 

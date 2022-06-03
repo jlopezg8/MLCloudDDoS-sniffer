@@ -1,3 +1,4 @@
+from services.get_capture_filename import get_capture_filename
 from services.get_network_interfaces import get_network_interfaces
 from services.Sniffer import Sniffer
 from services.SnifferProtocol import SnifferProtocol
