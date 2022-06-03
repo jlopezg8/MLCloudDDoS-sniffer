@@ -1,12 +1,21 @@
+from __future__ import annotations
+
 import platform
 
-import netifaces
+InterfaceFriendlyName = str
+InterfaceName = str
 
 
-def get_network_interfaces():
-    interfaces: list[str] = netifaces.interfaces()
+def get_network_interfaces() -> dict[InterfaceFriendlyName, InterfaceName]:
     if platform.system() == 'Windows':
-        # TODO: explain this:
-        return [fr'\\Device\\NPF_{interface}' for interface in interfaces]
+        # https://stackoverflow.com/a/53012414/10150433
+        from scapy.arch.windows import get_windows_if_list
+        return {
+            interface['name']:
+                # tshark on Windows expects interfaces in this format:
+                f'\\\\Device\\\\NPF_{interface["guid"]}'
+            for interface in get_windows_if_list()
+            if interface['ips']}  # to filter out irrelevant interfaces
     else:
-        return interfaces
+        import netifaces
+        return {interface: interface for interface in netifaces.interfaces()}

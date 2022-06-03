@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import tkinter as tk
+from collections import Mapping
 from tkinter import ttk
 
 from components.CaptureViewer import CaptureViewer
@@ -8,6 +9,8 @@ from components.InterfaceDropdown import InterfaceDropdown
 from components.SaveCaptureButton import SaveCaptureButton
 from components.StartStopCaptureButton import StartStopCaptureButton
 from services import SnifferProtocol
+from services.get_network_interfaces import (
+    InterfaceFriendlyName, InterfaceName)
 
 
 class App(ttk.Frame):
@@ -15,7 +18,7 @@ class App(ttk.Frame):
         self,
         master: tk.Misc,
         *,
-        network_interfaces: list[str],
+        network_interfaces: Mapping[InterfaceFriendlyName, InterfaceName],
         sniffer: SnifferProtocol,
     ):
         super().__init__(master, padding=10)
