@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import tkinter as tk
+from collections import Mapping
 from tkinter import ttk
 
 from components.events import Event
+from services.get_network_interfaces import (
+    InterfaceFriendlyName, InterfaceName)
 
 
 class InterfaceDropdown(ttk.Frame):
@@ -12,12 +15,12 @@ class InterfaceDropdown(ttk.Frame):
         master: tk.Misc,
         *,
         interface_var: tk.StringVar,
-        network_interfaces: dict[str, str],
+        network_interfaces: Mapping[InterfaceFriendlyName, InterfaceName],
     ):
         super().__init__(master)
         self._interface_var = interface_var
         self._network_interfaces = network_interfaces
-        self._interface_description_var = tk.StringVar()
+        self._interface_friendly_name_var = tk.StringVar()
         self._the_root: tk.Tk = self._root()  # type: ignore
         self._create_widgets()
         self._bind_event_handlers()
@@ -30,7 +33,7 @@ class InterfaceDropdown(ttk.Frame):
         ).pack(expand=True, fill=tk.X)
         self._combobox = ttk.Combobox(
             self,
-            textvariable=self._interface_description_var,
+            textvariable=self._interface_friendly_name_var,
             values=list(self._network_interfaces.keys()),
         )
         self._combobox.pack(expand=True, fill=tk.X)
@@ -53,7 +56,8 @@ class InterfaceDropdown(ttk.Frame):
         )
     
     def _on_combobox_selected(self, event):
-        interface_description = self._interface_description_var.get()
-        interface = self._network_interfaces[interface_description]
+        interface_friendly_name = self._interface_friendly_name_var.get()
+        interface = self._network_interfaces[interface_friendly_name]
         self._interface_var.set(interface)
+        
         self._the_root.event_generate(Event.INTERFACE_SELECTED)
