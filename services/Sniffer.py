@@ -13,16 +13,19 @@ class Sniffer:
 
     def start_capture(self, interface: str):
         if not self._capturing:
-            Thread(target=self._start_capture, args=(interface,)).start()
+            # A daemon thread so that it doesn't stop the Python program from
+            # exiting:
+            (Thread(target=self._start_capture, args=(interface,), daemon=True)
+                .start())
 
     def _start_capture(self, interface: str):
         with pyshark.LiveCapture(interface) as sniffer:
             self._capturing = True
             self._packets = []
             for packet in sniffer.sniff_continuously():
-                self._packets.append(serialize(packet))
                 if not self._capturing:
                     break
+                self._packets.append(serialize(packet))
 
     def stop_capture(self):
         if self._capturing:

@@ -55,7 +55,7 @@ class InterfaceDropdown(ttk.Frame):
             add=True,
         )
     
-    def _on_combobox_selected(self, event):
+    def _on_combobox_selected(self, event: tk.Event[ttk.Combobox]):
         interface_friendly_name = self._interface_friendly_name_var.get()
         interface = self._network_interfaces[interface_friendly_name]
         self._interface_var.set(interface)
