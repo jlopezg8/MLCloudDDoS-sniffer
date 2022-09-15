@@ -19,10 +19,12 @@ class SaveCaptureButton(ttk.Button):
         interface_var: tk.StringVar,
         sniffer: SnifferProtocol,
     ):
+        # TODO: create two buttons: one to save as JSON, the other one to save
+        # as flow CSV:
         super().__init__(
             master,
             text='Guardar captura',
-            command=self._save_capture,
+            command=self._save_capture_as_flow_csv,
             state='disabled',
             width=15,
         )
@@ -32,7 +34,7 @@ class SaveCaptureButton(ttk.Button):
         self._the_root: tk.Tk = master._root()  # type: ignore
         self._bind_event_handlers()
 
-    def _save_capture(self):
+    def _save_capture_as_json(self):
         options = dict(
             initialfile=self._get_capture_filename(self._interface_var.get()),
             filetypes=(
@@ -42,6 +44,17 @@ class SaveCaptureButton(ttk.Button):
         )
         if (filename := filedialog.asksaveasfilename(**options)):
             self._sniffer.save_packets_as_json(filename)
+    
+    def _save_capture_as_flow_csv(self):
+        options = dict(
+            initialfile=self._get_capture_filename(self._interface_var.get()),
+            filetypes=(
+                ('CSV', '*.csv'),
+                ('Todos los archivos', '*'),
+            ),
+        )
+        if (filename := filedialog.asksaveasfilename(**options)):
+            self._sniffer.save_packets_as_flow_csv(filename)
 
     def _bind_event_handlers(self):
         self._the_root.bind(

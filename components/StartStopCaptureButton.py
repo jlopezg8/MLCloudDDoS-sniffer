@@ -40,7 +40,7 @@ class StartStopCaptureButton(ttk.Button):
         self._the_root.bind(
             Event.INTERFACE_SELECTED,
             lambda event: self.configure(
-                state='normal' if self._interface_var.get() else 'disabled',
+                state='normal'# if self._interface_var.get() else 'disabled',
             ),
             add=True,
         )

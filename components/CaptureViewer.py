@@ -116,6 +116,6 @@ def CaptureViewer(
     sniffer: SnifferProtocol,
 ):
     frame = ttk.Frame(master)
-    CaptureViewer1(frame, sniffer=sniffer).pack(side=tk.LEFT)
+    #CaptureViewer1(frame, sniffer=sniffer).pack(side=tk.LEFT)
     CaptureViewer2(frame, sniffer=sniffer).pack(side=tk.RIGHT)
     return frame
