@@ -7,41 +7,41 @@ from tkinter import filedialog, ttk
 
 from components.events import Event
 from services import SnifferProtocol
-from services.get_capture_filename import Interface
+from services.get_flow_filename import Interface
 
 
-class SaveCaptureButton(ttk.Button):
+class SaveCaptureAsFlowButton(ttk.Button):
     def __init__(
         self,
         master: tk.Misc,
         *,
-        get_capture_filename: Callable[[Interface], str],
+        get_flow_filename: Callable[[Interface], str],
         interface_var: tk.StringVar,
         sniffer: SnifferProtocol,
     ):
         super().__init__(
             master,
             text='Guardar captura',
-            command=self._save_capture,
+            command=self._save_capture_as_flow,
             state='disabled',
             width=15,
         )
-        self._get_capture_filename = get_capture_filename
+        self._get_flow_filename = get_flow_filename
         self._interface_var = interface_var
         self._sniffer = sniffer
         self._the_root: tk.Tk = master._root()  # type: ignore
         self._bind_event_handlers()
 
-    def _save_capture(self):
+    def _save_capture_as_flow(self):
         options = dict(
-            initialfile=self._get_capture_filename(self._interface_var.get()),
+            initialfile=self._get_flow_filename(self._interface_var.get()),
             filetypes=(
-                ('JSON', '*.json'),
+                ('CSV', '*.csv'),
                 ('Todos los archivos', '*'),
             ),
         )
-        if (filename := filedialog.asksaveasfilename(**options)):
-            self._sniffer.save_packets_as_json(filename)
+        if (flow_filepath := filedialog.asksaveasfilename(**options)):
+            self._sniffer.save_capture_as_flow(flow_filepath)
 
     def _bind_event_handlers(self):
         self._the_root.bind(

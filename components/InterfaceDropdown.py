@@ -35,6 +35,7 @@ class InterfaceDropdown(ttk.Frame):
             self,
             textvariable=self._interface_friendly_name_var,
             values=list(self._network_interfaces.keys()),
+            width=30,
         )
         self._combobox.pack(expand=True, fill=tk.X)
 
